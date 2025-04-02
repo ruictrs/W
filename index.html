@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能心理测量系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .option {
+            margin-bottom: 8px;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: block;
+        }
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .result-item {
+            margin-bottom: 30px;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .result-score {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .view-results-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            display: block;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .view-results-btn:hover {
+            background-color: #2ecc71;
+        }
+        .active {
+            display: block;
+        }
+        .hidden {
+            display: none;
+        }
+        .progress-container {
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            height: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: right;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .user-info-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .user-agreement {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .agreement-text {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .agreement-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        .agreement-btn {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .agree-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        .agree-btn:hover {
+            background-color: #2ecc71;
+        }
+        .disagree-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .disagree-btn:hover {
+            background-color: #c0392b;
+        }
+        .result-user-info {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .report-disclaimer {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .confidentiality-note {
+            color: red;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .input-hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 用户信息填写 -->
+    <div id="userInfoSection" class="user-info-form">
+        <h2>录入信息</h2>
+        <div class="form-group">
+            <label for="userName">姓名：</label>
+            <input type="text" id="userName" required>
+        </div>
+        <div class="form-group">
+            <label for="userBirthday">出生日期：</label>
+            <input type="text" id="userBirthday" placeholder="请输入您的出生日期（格式：YYYY-MM-DD）" required>
+            <p class="input-hint">示例：2000-01-01</p>
+        </div>
+        <div class="form-group">
+            <label for="userGender">性别：</label>
+            <select id="userGender" required>
+                <option value="">请选择</option>
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="userPhone">手机号：</label>
+            <input type="tel" id="userPhone" required>
+        </div>
+        <p class="confidentiality-note">
+            (注：您提供的信息将绝对保密，只为了了解您目前的心理健康状况，以便为您提供进一步的心理健康服务)
+        </p>
+        <button class="submit-btn" onclick="completeUserInfo()">完成</button>
+    </div>
+    
+    <!-- 用户须知 -->
+    <div id="userAgreementSection" class="user-agreement hidden">
+        <h2>用户须知</h2>
+        <div class="agreement-text">
+            <p>本心理健康评估问卷旨在帮助您了解自身的心理健康状况。</p>
+            <p>本次测试及报告只作为临床参考，若存在严重心理问题，建议及时就医解决。</p>
+            <p>您的所有回答将严格保密，仅用于心理健康评估和研究目的。</p>
+            <p>本须知最终解释权归本网站所有。</p>
+        </div>
+        <div class="agreement-actions">
+            <button class="agreement-btn disagree-btn" onclick="disagreeToProceed()">不同意</button>
+            <button class="agreement-btn agree-btn" onclick="agreeToProceed()">同意</button>
+        </div>
+    </div>
+    
+    <!-- 进度条 -->
+    <div id="progressSection" class="hidden">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0/7 问卷已完成</div>
+    </div>
+    
+    <!-- 自杀风险评估量表 -->
+    <div id="suicideAssessment" class="questionnaire-section hidden">
+        <h2>自杀风险评估量表</h2>
+        <p><strong>说明：</strong>请根据最近一周您的实际感受，从以下选项中选择最符合您情况的答案。此量表仅作初步评估参考，不能替代专业诊断，若您或身边的人有自杀风险相关担忧，请及时寻求专业帮助。</p>
+        <p><strong>评分标准：</strong>1分：完全没有；2分：偶尔有（一周1 - 2次）；3分：有时有（一周3 - 4次）；4分：经常有（一周5 - 6次）；5分：总是有（每天都有）</p>
+        
+        <div class="question">
+            <h3>一、自杀意念</h3>
+            <div class="question">
+                <p>1. 我曾有过结束自己生命的想法。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide1" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide1" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide1" value="3"> 3分：有时有（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide1" value="4"> 4分：经常有（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide1" value="5"> 5分：总是有（每天都有）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>2. 我会想象自己死亡后的情景。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide2" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide2" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide2" value="3"> 3分：有时有（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide2" value="4"> 4分：经常有（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide2" value="5"> 5分：总是有（每天都有）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>3. 我觉得死亡或许是一种解脱。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide3" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide3" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide3" value="3"> 3分：有时有（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide3" value="4"> 4分：经常有（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide3" value="5"> 5分：总是有（每天都有）</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <h3>二、自杀计划</h3>
+            <div class="question">
+                <p>1. 我曾制定过自杀的具体计划。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide4" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide4" value="2"> 2分：偶尔想过制定计划（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide4" value="3"> 3分：有时考虑制定计划（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide4" value="4"> 4分：已经有大致计划（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide4" value="5"> 5分：有详细且可实施的计划（每天都在考虑实施）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>2. 我想好了自杀的时间和地点。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide5" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide5" value="2"> 2分：偶尔想过相关时间地点（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide5" value="3"> 3分：有时琢磨时间地点（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide5" value="4"> 4分：基本确定了时间和地点（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide5" value="5"> 5分：明确具体时间和地点并准备行动（每天都在准备）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>3. 我准备好了用于自杀的工具或物品。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide6" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide6" value="2"> 2分：偶尔想过准备（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide6" value="3"> 3分：有时打算准备（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide6" value="4"> 4分：已经有了部分工具（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide6" value="5"> 5分：已备齐所有工具准备行动（每天都在准备）</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <h3>三、情绪状态</h3>
+            <div class="question">
+                <p>1. 我感到极度绝望，看不到未来的希望。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide7" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide7" value="2"> 2分：偶尔感到绝望（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide7" value="3"> 3分：有时觉得绝望（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide7" value="4"> 4分：经常处于绝望状态（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide7" value="5"> 5分：总是感到极度绝望（每天都绝望）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>2. 我被强烈的孤独感包围，觉得无人理解自己。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide8" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide8" value="2"> 2分：偶尔感到孤独（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide8" value="3"> 3分：有时觉得孤独（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide8" value="4"> 4分：经常觉得孤独（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide8" value="5"> 5分：总是被孤独笼罩（每天都孤独）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>3. 我长期陷入悲伤、痛苦的情绪中无法自拔。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide9" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide9" value="2"> 2分：偶尔悲伤痛苦（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide9" value="3"> 3分：有时悲伤痛苦（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide9" value="4"> 4分：经常处于悲伤痛苦中（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide9" value="5"> 5分：总是被悲伤痛苦折磨（每天都痛苦）</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <h3>四、行为改变</h3>
+            <div class="question">
+                <p>1. 我最近开始回避社交，减少与家人、朋友的接触。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide10" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide10" value="2"> 2分：偶尔回避（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide10" value="3"> 3分：有时回避（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide10" value="4"> 4分：经常回避（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide10" value="5"> 5分：总是回避（每天都拒绝社交）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>2. 我对曾经喜欢的事物失去了兴趣，不再参与相关活动。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide11" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide11" value="2"> 2分：偶尔失去兴趣（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide11" value="3"> 3分：有时没兴趣（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide11" value="4"> 4分：经常没兴趣（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide11" value="5"> 5分：总是没兴趣（对所有喜好都无感）</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>3. 我的睡眠和饮食规律被打乱，出现失眠、食欲不振或暴饮暴食的情况。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide12" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide12" value="2"> 2分：偶尔睡眠饮食紊乱（一周1 - 2次）</div>
+                    <div class="option"><input type="radio" name="suicide12" value="3"> 3分：有时睡眠饮食失调（一周3 - 4次）</div>
+                    <div class="option"><input type="radio" name="suicide12" value="4"> 4分：经常睡眠饮食不正常（一周5 - 6次）</div>
+                    <div class="option"><input type="radio" name="suicide12" value="5"> 5分：总是睡眠饮食混乱（每天都不正常）</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <h3>五、既往经历</h3>
+            <div class="question">
+                <p>1. 我过去曾有过自杀未遂的经历。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide13" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide13" value="2"> 2分：很久以前有过，影响不大</div>
+                    <div class="option"><input type="radio" name="suicide13" value="3"> 3分：过去有过，偶尔会想起</div>
+                    <div class="option"><input type="radio" name="suicide13" value="4"> 4分：过去经历对现在仍有影响</div>
+                    <div class="option"><input type="radio" name="suicide13" value="5"> 5分：过去经历严重影响现在，时常想起</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>2. 我的家族中有自杀或精神疾病的病史。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide14" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide14" value="2"> 2分：听说过但关系较远</div>
+                    <div class="option"><input type="radio" name="suicide14" value="3"> 3分：有亲戚有相关情况</div>
+                    <div class="option"><input type="radio" name="suicide14" value="4"> 4分：直系亲属有相关情况</div>
+                    <div class="option"><input type="radio" name="suicide14" value="5"> 5分：直系亲属自杀或患精神疾病对我影响很大</div>
+                </div>
+            </div>
+            
+            <div class="question">
+                <p>3. 我近期遭受了重大的生活挫折，如失恋、失业、亲友离世等。</p>
+                <div class="options">
+                    <div class="option"><input type="radio" name="suicide15" value="1"> 1分：完全没有</div>
+                    <div class="option"><input type="radio" name="suicide15" value="2"> 2分：遇到小挫折，能很快恢复</div>
+                    <div class="option"><input type="radio" name="suicide15" value="3"> 3分：有一定挫折，需要时间调整</div>
+                    <div class="option"><input type="radio" name="suicide15" value="4"> 4分：遭受较大挫折，对生活影响明显</div>
+                    <div class="option"><input type="radio" name="suicide15" value="5"> 5分：遭遇重大挫折，生活完全被打乱</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="submit-btn" onclick="submitSuicideAssessment()">提交</button>
+        <div class="success-message" id="suicideSuccess">您已做答完此表，请继续作答</div>
+    </div>
+    
+<div id="hama" class="questionnaire-section hidden">
+    <h2>汉密尔顿焦虑量表（HAMA）</h2>
+    <p><strong>说明：</strong>以下包含21个项目，每个项目设置5个选项，从无症状到症状极重程度进行划分，请根据您最近一周的情况选择最符合的选项。</p>
+    
+    <div class="question">
+        <p>1. 焦虑心境</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama1" value="0"> 0分：无焦虑心境，情绪平静。</div>
+            <div class="option"><input type="radio" name="hama1" value="1"> 1分：偶尔感到轻微的紧张不安，不影响日常生活。</div>
+            <div class="option"><input type="radio" name="hama1" value="2"> 2分：经常感到紧张不安，对日常活动有一定影响，但仍可正常进行。</div>
+            <div class="option"><input type="radio" name="hama1" value="3"> 3分：持续的紧张不安，明显影响日常生活和工作，难以集中注意力。</div>
+            <div class="option"><input type="radio" name="hama1" value="4"> 4分：极度焦虑，几乎无法正常生活，有强烈的失控感。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>2. 紧张</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama2" value="0"> 0分：身体和精神均无紧张感，状态放松。</div>
+            <div class="option"><input type="radio" name="hama2" value="1"> 1分：偶尔感到肌肉轻微紧张，或精神上有一点紧绷感。</div>
+            <div class="option"><input type="radio" name="hama2" value="2"> 2分：经常感到肌肉紧张，比如颈部、肩部僵硬，精神上也较为紧绷。</div>
+            <div class="option"><input type="radio" name="hama2" value="3"> 3分：持续的肌肉紧张，伴有明显的震颤，精神高度紧张，难以放松。</div>
+            <div class="option"><input type="radio" name="hama2" value="4"> 4分：肌肉紧张严重，震颤明显，精神处于极度紧绷状态，无法自控。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>3. 害怕</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama3" value="0"> 0分：无害怕情绪，对周围环境和事物无恐惧心理。</div>
+            <div class="option"><input type="radio" name="hama3" value="1"> 1分：偶尔会对某些特定事物或情境感到害怕，但不强烈，能自行克服。</div>
+            <div class="option"><input type="radio" name="hama3" value="2"> 2分：经常对一些常见事物或情境感到害怕，如社交场合、空旷地方等，影响正常生活。</div>
+            <div class="option"><input type="radio" name="hama3" value="3"> 3分：对多种事物或情境存在强烈恐惧，回避行为明显，严重影响生活和社交。</div>
+            <div class="option"><input type="radio" name="hama3" value="4"> 4分：恐惧心理极其严重，几乎对所有事物都感到害怕，完全无法正常生活。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>4. 失眠</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama4" value="0"> 0分：睡眠正常，入睡快，睡眠过程中无中断，醒来后精神良好。</div>
+            <div class="option"><input type="radio" name="hama4" value="1"> 1分：偶尔入睡困难，或睡眠中会有短暂醒来，但不影响整体睡眠质量。</div>
+            <div class="option"><input type="radio" name="hama4" value="2"> 2分：经常入睡困难，睡眠较浅，容易醒来，第二天精神状态受一定影响。</div>
+            <div class="option"><input type="radio" name="hama4" value="3"> 3分：长期入睡困难，睡眠中频繁醒来，多梦，严重影响第二天的精神和生活状态。</div>
+            <div class="option"><input type="radio" name="hama4" value="4"> 4分：几乎无法入睡，整夜处于半梦半醒状态，严重影响身心健康和日常生活。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>5. 认知功能（注意力不集中、记忆力下降等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama5" value="0"> 0分：认知功能正常，注意力集中，记忆力良好。</div>
+            <div class="option"><input type="radio" name="hama5" value="1"> 1分：偶尔出现注意力不集中或记忆力轻微下降的情况，但不影响正常工作和学习。</div>
+            <div class="option"><input type="radio" name="hama5" value="2"> 2分：经常出现注意力不集中，记忆力下降，对工作和学习有一定影响。</div>
+            <div class="option"><input type="radio" name="hama5" value="3"> 3分：注意力难以集中，记忆力明显下降，严重影响工作和学习效率，需要花费更多时间完成任务。</div>
+            <div class="option"><input type="radio" name="hama5" value="4"> 4分：认知功能严重受损，几乎无法集中注意力，记忆力极差，无法正常工作和学习。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>6. 抑郁心境</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama6" value="0"> 0分：无抑郁心境，情绪积极乐观。</div>
+            <div class="option"><input type="radio" name="hama6" value="1"> 1分：偶尔感到情绪低落，但很快能恢复正常。</div>
+            <div class="option"><input type="radio" name="hama6" value="2"> 2分：经常感到情绪低落，对一些事情缺乏兴趣，但还能进行日常活动。</div>
+            <div class="option"><input type="radio" name="hama6" value="3"> 3分：持续的情绪低落，对大多数事情都失去兴趣，对生活有消极想法。</div>
+            <div class="option"><input type="radio" name="hama6" value="4"> 4分：极度抑郁，有自杀念头或行为，严重影响生活和健康。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>7. 肌肉系统症状（肌肉酸痛、抽动等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama7" value="0"> 0分：无肌肉系统症状，肌肉感觉正常。</div>
+            <div class="option"><input type="radio" name="hama7" value="1"> 1分：偶尔感到肌肉轻微酸痛或有短暂的抽动，不影响活动。</div>
+            <div class="option"><input type="radio" name="hama7" value="2"> 2分：经常感到肌肉酸痛，或有较频繁的肌肉抽动，对活动有一定影响。</div>
+            <div class="option"><input type="radio" name="hama7" value="3"> 3分：持续的肌肉酸痛，抽动较为严重，影响肢体正常活动，可能需要休息缓解。</div>
+            <div class="option"><input type="radio" name="hama7" value="4"> 4分：肌肉症状极其严重，酸痛难忍，抽动频繁且剧烈，严重影响日常生活和行动能力。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>8. 感觉系统症状（耳鸣、视力模糊、刺痛感等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama8" value="0"> 0分：无感觉系统症状，感觉器官功能正常。</div>
+            <div class="option"><input type="radio" name="hama8" value="1"> 1分：偶尔出现轻微的耳鸣、视力模糊或刺痛感等，很快消失。</div>
+            <div class="option"><input type="radio" name="hama8" value="2"> 2分：经常出现上述感觉系统症状，对生活有一定干扰，但不严重。</div>
+            <div class="option"><input type="radio" name="hama8" value="3"> 3分：持续存在感觉系统症状，如耳鸣持续不停、视力模糊影响视物等，严重影响生活质量。</div>
+            <div class="option"><input type="radio" name="hama8" value="4"> 4分：感觉系统症状严重，严重影响正常生活和感知，如完全听不清声音、视力严重下降等。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>9. 心血管系统症状（心悸、心慌等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama9" value="0"> 0分：无心血管系统症状，心率、血压正常，无不适感觉。</div>
+            <div class="option"><input type="radio" name="hama9" value="1"> 1分：偶尔感到心悸或心慌，很快恢复正常，不影响日常生活。</div>
+            <div class="option"><input type="radio" name="hama9" value="2"> 2分：经常感到心悸、心慌，可能伴有轻度的心跳加快，对日常生活有一定影响。</div>
+            <div class="option"><input type="radio" name="hama9" value="3"> 3分：频繁出现心悸、心慌，心跳明显加快，可能伴有胸闷等症状，严重影响日常生活和工作。</div>
+            <div class="option"><input type="radio" name="hama9" value="4"> 4分：心血管症状极其严重，心悸、心慌持续不停，伴有严重的胸闷、胸痛等症状，可能需要紧急就医。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>10. 呼吸系统症状（呼吸困难、憋气等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama10" value="0"> 0分：无呼吸系统症状，呼吸顺畅，无不适感觉。</div>
+            <div class="option"><input type="radio" name="hama10" value="1"> 1分：偶尔感到呼吸不畅或轻微憋气，很快缓解，不影响活动。</div>
+            <div class="option"><input type="radio" name="hama10" value="2"> 2分：经常感到呼吸困难或憋气，对日常活动有一定影响，如爬楼梯时会加重。</div>
+            <div class="option"><input type="radio" name="hama10" value="3"> 3分：持续的呼吸困难或憋气，严重影响日常生活，可能需要休息或调整姿势缓解。</div>
+            <div class="option"><input type="radio" name="hama10" value="4"> 4分：呼吸困难极其严重，几乎无法正常呼吸，严重影响生命安全，需立即就医。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>11. 胃肠道症状（腹痛、腹泻、消化不良等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama11" value="0"> 0分：无胃肠道症状，消化功能正常，无腹痛、腹泻等不适。</div>
+            <div class="option"><input type="radio" name="hama11" value="1"> 1分：偶尔出现轻微腹痛、腹泻或消化不良症状，很快恢复正常。</div>
+            <div class="option"><input type="radio" name="hama11" value="2"> 2分：经常出现胃肠道不适症状，如腹痛、腹胀、腹泻等，对饮食和生活有一定影响。</div>
+            <div class="option"><input type="radio" name="hama11" value="3"> 3分：持续的胃肠道症状，严重影响饮食和营养吸收，导致体重下降等问题。</div>
+            <div class="option"><input type="radio" name="hama11" value="4"> 4分：胃肠道症状极其严重，如频繁剧烈腹痛、腹泻不止等，严重影响身体健康和生活质量。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>12. 生殖泌尿系统症状（尿频、尿急、性功能障碍等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama12" value="0"> 0分：无生殖泌尿系统症状，功能正常。</div>
+            <div class="option"><input type="radio" name="hama12" value="1"> 1分：偶尔出现尿频、尿急或轻微性功能障碍，不影响日常生活。</div>
+            <div class="option"><input type="radio" name="hama12" value="2"> 2分：经常出现尿频、尿急等症状，或性功能障碍对生活有一定影响。</div>
+            <div class="option"><input type="radio" name="hama12" value="3"> 3分：持续的尿频、尿急等症状，严重影响生活和休息，性功能障碍严重影响性生活质量。</div>
+            <div class="option"><input type="radio" name="hama12" value="4"> 4分：生殖泌尿系统症状极其严重，如尿失禁、性功能完全丧失等，严重影响生活和心理健康。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>13. 植物神经症状（多汗、面部潮红等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama13" value="0"> 0分：无植物神经症状，皮肤干燥，无异常脸红等情况。</div>
+            <div class="option"><input type="radio" name="hama13" value="1"> 1分：偶尔出现多汗或轻微面部潮红，很快消退，不影响外观和生活。</div>
+            <div class="option"><input type="radio" name="hama13" value="2"> 2分：经常出现多汗、面部潮红等症状，对外观和社交有一定影响。</div>
+            <div class="option"><input type="radio" name="hama13" value="3"> 3分：持续的多汗、面部潮红，严重影响外观和社交活动，可能导致心理压力。</div>
+            <div class="option"><input type="radio" name="hama13" value="4"> 4分：植物神经症状极其严重，如大量出汗湿透衣物、面部持续通红无法消退等，严重影响生活和心理健康。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>14. 会谈时行为表现（紧张、不安、小动作多等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama14" value="0"> 0分：会谈时行为表现正常，神态自然，无紧张不安表现。</div>
+            <div class="option"><input type="radio" name="hama14" value="1"> 1分：偶尔出现轻微紧张表现，如轻微搓手、坐立不安等，但不明显。</div>
+            <div class="option"><input type="radio" name="hama14" value="2"> 2分：经常出现紧张不安的行为，如频繁变换坐姿、咬嘴唇等，较为明显。</div>
+            <div class="option"><input type="radio" name="hama14" value="3"> 3分：会谈时明显紧张，小动作频繁，如不停地抖腿、双手乱动等，影响会谈进行。</div>
+            <div class="option"><input type="radio" name="hama14" value="4"> 4分：极度紧张，行为失控，如无法安静坐着，甚至起身走动，严重影响会谈和交流。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>15. 害怕感（预期性焦虑，担心不好的事情发生）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama15" value="0"> 0分：无害怕感，对未来没有过多担忧，心态平和。</div>
+            <div class="option"><input type="radio" name="hama15" value="1"> 1分：偶尔会担心一些小事情，但不影响情绪和生活。</div>
+            <div class="option"><input type="radio" name="hama15" value="2"> 2分：经常担心一些事情，如担心自己或家人的健康、安全等，对情绪有一定影响。</div>
+            <div class="option"><input type="radio" name="hama15" value="3"> 3分：总是处于担心状态，对各种事情都有预期性焦虑，严重影响情绪和生活，难以放松。</div>
+            <div class="option"><input type="radio" name="hama15" value="4"> 4分：极度害怕，对未来充满恐惧，认为会有不好的事情发生，严重影响正常生活和心理健康。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>16. 惊恐发作</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama16" value="0"> 0分：无惊恐发作，从未出现过突然的强烈恐惧和不适。</div>
+            <div class="option"><input type="radio" name="hama16" value="1"> 1分：偶尔感到强烈的恐惧和不适，但未达到惊恐发作程度，很快缓解。</div>
+            <div class="option"><input type="radio" name="hama16" value="2"> 2分：有过几次惊恐发作，发作时感到强烈的恐惧、心慌、呼吸困难等，但持续时间较短。</div>
+            <div class="option"><input type="radio" name="hama16" value="3"> 3分：惊恐发作较为频繁，每月发作多次，严重影响生活和心理状态，害怕再次发作。</div>
+            <div class="option"><input type="radio" name="hama16" value="4"> 4分：惊恐发作非常频繁且严重，每周发作多次，严重影响日常生活，甚至不敢出门，需要寻求专业治疗。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>17. 强迫症状（强迫思维、强迫行为）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama17" value="0"> 0分：无强迫症状，思维和行为正常，无不必要的重复动作或想法。</div>
+            <div class="option"><input type="radio" name="hama17" value="1"> 1分：偶尔出现一些强迫思维或行为，如偶尔会反复检查门窗是否关好，但不影响生活。</div>
+            <div class="option"><input type="radio" name="hama17" value="2"> 2分：经常出现强迫思维或行为，如反复洗手、反复计数等，对生活有一定影响，但还能控制。</div>
+            <div class="option"><input type="radio" name="hama17" value="3"> 3分：强迫症状较为严重，每天花费较多时间在强迫行为或思维上，严重影响生活和工作效率。</div>
+            <div class="option"><input type="radio" name="hama17" value="4"> 4分：强迫症状极其严重，完全无法控制，严重影响生活质量，导致社交、工作等功能受损。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>18. 社交回避</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama18" value="0"> 0分：无社交回避，喜欢社交活动，积极参与社交场合。</div>
+            <div class="option"><input type="radio" name="hama18" value="1"> 1分：偶尔会回避一些社交场合，但不是经常，不影响正常社交生活。</div>
+            <div class="option"><input type="radio" name="hama18" value="2"> 2分：经常回避一些社交场合，对社交活动有一定抵触情绪，但还能进行必要的社交。</div>
+            <div class="option"><input type="radio" name="hama18" value="3"> 3分：明显回避社交，尽量减少社交活动，对社交有恐惧心理，影响正常人际关系。</div>
+            <div class="option"><input type="radio" name="hama18" value="4"> 4分：完全回避社交，几乎不参与任何社交活动，严重影响社交和生活质量。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>19. 易激惹</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama19" value="0"> 0分：无易激惹情况，情绪稳定，不易发脾气。</div>
+            <div class="option"><input type="radio" name="hama19" value="1"> 1分：偶尔会因为小事发脾气，但很快恢复平静，不影响人际关系。</div>
+            <div class="option"><input type="radio" name="hama19" value="2"> 2分：经常容易发脾气，对家人、朋友等态度不好，对人际关系有一定影响。</div>
+            <div class="option"><input type="radio" name="hama19" value="3"> 3分：情绪非常容易激动，经常因为小事大发雷霆，严重影响人际关系和生活。</div>
+            <div class="option"><input type="radio" name="hama19" value="4"> 4分：极度易激惹，几乎无法控制自己的情绪，经常与人发生冲突，严重影响生活和心理健康。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>20. 注意力障碍</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama20" value="0"> 0分：注意力正常，能够专注于各种活动，不分心。</div>
+            <div class="option"><input type="radio" name="hama20" value="1"> 1分：偶尔出现注意力不集中的情况，如在阅读或工作时偶尔走神，但不影响完成任务。</div>
+            <div class="option"><input type="radio" name="hama20" value="2"> 2分：经常出现注意力难以集中的问题，需要花费更多时间完成任务，对工作和学习有一定影响。</div>
+            <div class="option"><input type="radio" name="hama20" value="3"> 3分：注意力严重不集中，难以持续专注于任何事情，严重影响工作和学习效率，无法完成复杂任务。</div>
+            <div class="option"><input type="radio" name="hama20" value="4"> 4分：几乎无法集中注意力，对周围环境和事物难以关注，严重影响生活和工作能力。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>21. 疲劳感</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hama21" value="0"> 0分：无疲劳感，精力充沛，能够正常进行日常活动。</div>
+            <div class="option"><input type="radio" name="hama21" value="1"> 1分：偶尔感到轻微疲劳，休息后很快恢复，不影响正常生活。</div>
+            <div class="option"><input type="radio" name="hama21" value="2"> 2分：经常感到疲劳，即使经过休息也不能完全恢复，对日常活动有一定影响。</div>
+            <div class="option"><input type="radio" name="hama21" value="3"> 3分：持续的疲劳感，严重影响工作和生活，导致活动量明显减少。</div>
+            <div class="option"><input type="radio" name="hama21" value="4"> 4分：极度疲劳，几乎无法进行日常活动，严重影响身体健康和生活质量。</div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitHAMA()">提交</button>
+    <div class="success-message" id="hamaSuccess">您已做答完此表，请继续作答</div>
+</div>
+
+    <div id="hamd" class="questionnaire-section hidden">
+    <h2>汉密尔顿抑郁量表（HAMD - 24项）</h2>
+    <p><strong>说明：</strong>以下包含24个项目，请根据您最近一周的情况选择最符合的选项。</p>
+    
+    <div class="question">
+        <p>1. 抑郁情绪</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd1" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd1" value="1"> 1分：只在问到时才诉述有抑郁情绪。</div>
+            <div class="option"><input type="radio" name="hamd1" value="2"> 2分：在谈话中自发地表达抑郁情绪。</div>
+            <div class="option"><input type="radio" name="hamd1" value="3"> 3分：表情和言语流露出明显的抑郁情绪，例如常常唉声叹气。</div>
+            <div class="option"><input type="radio" name="hamd1" value="4"> 4分：明显的自杀念头或曾有自杀行为。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>2. 有罪感</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd2" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd2" value="1"> 1分：责备自己，感到自己已连累他人。</div>
+            <div class="option"><input type="radio" name="hamd2" value="2"> 2分：认为自己犯了罪，反复思考以往的过失和错误。</div>
+            <div class="option"><input type="radio" name="hamd2" value="3"> 3分：认为目前的疾病是对自己错误的惩罚，或有罪恶妄想。</div>
+            <div class="option"><input type="radio" name="hamd2" value="4"> 4分：罪恶妄想伴有指责或威胁性幻觉。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>3. 自杀</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd3" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd3" value="1"> 1分：觉得活着没有意义。</div>
+            <div class="option"><input type="radio" name="hamd3" value="2"> 2分：希望自己已经死去，或有过自杀的念头。</div>
+            <div class="option"><input type="radio" name="hamd3" value="3"> 3分：有过自杀企图。</div>
+            <div class="option"><input type="radio" name="hamd3" value="4"> 4分：有自杀未遂史或有具体自杀计划。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>4. 入睡困难（初段失眠）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd4" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd4" value="1"> 1分：主诉入睡困难，上床半小时后仍不能入睡。</div>
+            <div class="option"><input type="radio" name="hamd4" value="2"> 2分：夜间睡眠不足6小时，且多次看表。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>5. 睡眠不深（中段失眠）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd5" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd5" value="1"> 1分：睡眠浅，多梦。</div>
+            <div class="option"><input type="radio" name="hamd5" value="2"> 2分：夜间多次醒来，每次醒来时间超过15分钟。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>6. 早醒（末段失眠）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd6" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd6" value="1"> 1分：比平时早醒1小时以内，但能重新入睡。</div>
+            <div class="option"><input type="radio" name="hamd6" value="2"> 2分：比平时早醒1小时以上，且不能重新入睡。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>7. 工作和兴趣</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd7" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd7" value="1"> 1分：提问时才诉述工作和兴趣减退。</div>
+            <div class="option"><input type="radio" name="hamd7" value="2"> 2分：自发地直接表达对工作、学习或爱好的兴趣减退。</div>
+            <div class="option"><input type="radio" name="hamd7" value="3"> 3分：对工作或学习毫无兴趣，严重者完全不能工作。</div>
+            <div class="option"><input type="radio" name="hamd7" value="4"> 4分：长期不上班，没有学习能力，不能参加任何活动。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>8. 迟缓（指思维、言语及行为）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd8" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd8" value="1"> 1分：精神检查中发现轻度迟缓。</div>
+            <div class="option"><input type="radio" name="hamd8" value="2"> 2分：精神检查中发现明显迟缓，例如回答问题缓慢。</div>
+            <div class="option"><input type="radio" name="hamd8" value="3"> 3分：在病房活动明显减少，言语明显减少。</div>
+            <div class="option"><input type="radio" name="hamd8" value="4"> 4分：完全不动，默不作声。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>9. 激越</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd9" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd9" value="1"> 1分：检查时有些心神不定。</div>
+            <div class="option"><input type="radio" name="hamd9" value="2"> 2分：明显心神不定或小动作多。</div>
+            <div class="option"><input type="radio" name="hamd9" value="3"> 3分：不能静坐，检查中曾起立。</div>
+            <div class="option"><input type="radio" name="hamd9" value="4"> 4分：搓手、咬手指、扯头发、咬嘴唇等。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>10. 精神性焦虑</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd10" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd10" value="1"> 1分：问及时诉述有焦虑。</div>
+            <div class="option"><input type="radio" name="hamd10" value="2"> 2分：自发地表达有焦虑情绪。</div>
+            <div class="option"><input type="radio" name="hamd10" value="3"> 3分：表情和言语流露出明显的焦虑，例如紧张不安。</div>
+            <div class="option"><input type="radio" name="hamd10" value="4"> 4分：伴有惊恐发作。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>11. 躯体性焦虑（指焦虑的生理症状）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd11" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd11" value="1"> 1分：轻度。</div>
+            <div class="option"><input type="radio" name="hamd11" value="2"> 2分：中度，有口干、出汗、心悸、头痛、头晕等症状。</div>
+            <div class="option"><input type="radio" name="hamd11" value="3"> 3分：重度，上述症状明显，影响生活或需处理。</div>
+            <div class="option"><input type="radio" name="hamd11" value="4"> 4分：严重影响生活和活动。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>12. 胃肠道症状</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd12" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd12" value="1"> 1分：食欲减退，但不需他人鼓励便自行进食。</div>
+            <div class="option"><input type="radio" name="hamd12" value="2"> 2分：进食需他人催促或请求和需要应用泻药或助消化药。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>13. 全身症状</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd13" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd13" value="1"> 1分：四肢、背部或颈部沉重感，背痛、头痛、肌肉疼痛，全身乏力或疲倦。</div>
+            <div class="option"><input type="radio" name="hamd13" value="2"> 2分：症状明显，影响生活。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>14. 性症状（指性欲减退、月经紊乱等）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd14" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd14" value="1"> 1分：轻度。</div>
+            <div class="option"><input type="radio" name="hamd14" value="2"> 2分：重度。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>15. 疑病</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd15" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd15" value="1"> 1分：对身体过分关注。</div>
+            <div class="option"><input type="radio" name="hamd15" value="2"> 2分：反复考虑健康问题。</div>
+            <div class="option"><input type="radio" name="hamd15" value="3"> 3分：有疑病妄想。</div>
+            <div class="option"><input type="radio" name="hamd15" value="4"> 4分：伴幻觉的疑病妄想。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>16. 体重减轻</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd16" value="0"> 0分：无体重减轻或体重增加。</div>
+            <div class="option"><input type="radio" name="hamd16" value="1"> 1分：体重减轻1周内超过1kg。</div>
+            <div class="option"><input type="radio" name="hamd16" value="2"> 2分：体重减轻1周内超过2kg。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>17. 自知力</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd17" value="0"> 0分：知道自己有病，表现为抑郁。</div>
+            <div class="option"><input type="radio" name="hamd17" value="1"> 1分：知道自己有病，但归咎于伙食太差、环境问题、工作过忙、病毒感染或需要休息等。</div>
+            <div class="option"><input type="radio" name="hamd17" value="2"> 2分：完全否认自己有病。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>18. 日夜变化（仅评心境，如早晨忧郁重，下午或晚上好转）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd18" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd18" value="1"> 1分：轻度。</div>
+            <div class="option"><input type="radio" name="hamd18" value="2"> 2分：重度。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>19. 人格解体或现实解体（感到"空虚"，不真实，与外界疏远感）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd19" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd19" value="1"> 1分：问及时才诉述。</div>
+            <div class="option"><input type="radio" name="hamd19" value="2"> 2分：自发地表达。</div>
+            <div class="option"><input type="radio" name="hamd19" value="3"> 3分：症状严重，难以忍受。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>20. 偏执症状</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd20" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd20" value="1"> 1分：有猜疑。</div>
+            <div class="option"><input type="radio" name="hamd20" value="2"> 2分：有牵连观念或被害妄想。</div>
+            <div class="option"><input type="radio" name="hamd20" value="3"> 3分：有妄想性自责或夸大妄想。</div>
+            <div class="option"><input type="radio" name="hamd20" value="4"> 4分：伴有幻觉的妄想。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>21. 强迫症状（指强迫思维和强迫行为）</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd21" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd21" value="1"> 1分：问及时才诉述。</div>
+            <div class="option"><input type="radio" name="hamd21" value="2"> 2分：自发地表达。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>22. 能力减退感</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd22" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd22" value="1"> 1分：仅在问到时才诉述有能力减退感。</div>
+            <div class="option"><input type="radio" name="hamd22" value="2"> 2分：自发地表达有能力减退感。</div>
+            <div class="option"><input type="radio" name="hamd22" value="3"> 3分：有严重的能力减退感，完全不能胜任工作。</div>
+            <div class="option"><input type="radio" name="hamd22" value="4"> 4分：有严重的能力减退感，且有自卑感。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>23. 绝望感</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd23" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd23" value="1"> 1分：有时怀疑“情况是否会好转”，但解释后能接受。</div>
+            <div class="option"><input type="radio" name="hamd23" value="2"> 2分：持续感到“没有希望”，但解释后能接受。</div>
+            <div class="option"><input type="radio" name="hamd23" value="3"> 3分：对未来感到灰心、悲观和绝望，不易被说服。</div>
+            <div class="option"><input type="radio" name="hamd23" value="4"> 4分：严重绝望，有自杀行为。</div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <p>24. 自卑感</p>
+        <div class="options">
+            <div class="option"><input type="radio" name="hamd24" value="0"> 0分：无。</div>
+            <div class="option"><input type="radio" name="hamd24" value="1"> 1分：仅在问到时才诉述有自卑感。</div>
+            <div class="option"><input type="radio" name="hamd24" value="2"> 2分：自发地表达有自卑感。</div>
+            <div class="option"><input type="radio" name="hamd24" value="3"> 3分：有明显的自卑感，例如认为自己不如他人。</div>
+            <div class="option"><input type="radio" name="hamd24" value="4"> 4分：有严重的自卑感，伴有自罪观念。</div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitHAMD()">提交</button>
+    <div class="success-message" id="hamdSuccess">您已做答完此表，请继续作答</div>
+</div>
+
+<div id="emotionRegulation" class="questionnaire-section hidden">
+    <h2>青少年情绪调节问卷</h2>
+    <p><strong>说明：</strong>亲爱的同学，这份问卷旨在了解你平常是如何处理自己的情绪的。答案没有对错之分，请仔细阅读每个题目，根据你的实际情况，在以下5个选项中选择最符合你的一项。答题时间没有限制，请放心作答。感谢你的支持与配合！</p>
+    <p><strong>评分标准：</strong>1分：几乎从不；2分：很少；3分：有时；4分：经常；5分：总是</p>
+    
+    <div class="question">
+        <h3>积极情绪调节策略</h3>
+        <div class="question">
+            <p>1. 当我心情好的时候，我会主动和朋友、家人分享这份快乐。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion1" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion1" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion1" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion1" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion1" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 遇到开心的事情，我会通过拍照、写日记等方式把这份好心情记录下来。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion2" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion2" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion2" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion2" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion2" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 开心的时候，我会去做自己喜欢的事情，比如听音乐、看电影、运动，让快乐延续。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion3" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion3" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion3" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion3" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion3" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>消极情绪调节策略 - 认知重评</h3>
+        <div class="question">
+            <p>1. 当我遇到让我生气或难过的事情时，我会尝试从不同的角度去理解这件事，让自己感觉好一些。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion4" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion4" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion4" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion4" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion4" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 面对烦恼，我会告诉自己这是一次成长的机会，从而调整自己的情绪。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion5" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion5" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion5" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion5" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion5" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 当和朋友闹矛盾不开心时，我会思考是不是自己也有做得不对的地方，以此缓解负面情绪。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion6" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion6" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion6" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion6" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion6" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>消极情绪调节策略 - 表达抑制</h3>
+        <div class="question">
+            <p>1. 心里难受的时候，我会把情绪藏在心里，不让别人看出来。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion7" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion7" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion7" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion7" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion7" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 即使很生气，我也会尽量控制自己的表情和言行，不表现出来。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion8" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion8" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion8" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion8" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion8" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 当遇到烦心事，我会选择自己默默承受，不向他人倾诉。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion9" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion9" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion9" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion9" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion9" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>消极情绪调节策略 - 问题解决</h3>
+        <div class="question">
+            <p>1. 遇到让我心情不好的问题，我会立刻想办法去解决它，让自己不再烦恼。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion10" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion10" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion10" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion10" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion10" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 当学习压力大导致情绪不好时，我会制定学习计划，合理安排时间，来缓解这种情绪。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion11" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion11" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion11" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion11" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion11" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 如果和同学关系不好影响心情，我会主动找对方沟通，解决我们之间的矛盾。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion12" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion12" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion12" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion12" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion12" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>消极情绪调节策略 - 寻求社会支持</h3>
+        <div class="question">
+            <p>1. 心情不好的时候，我会向父母倾诉，寻求他们的安慰和建议。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion13" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion13" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion13" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion13" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion13" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 遇到烦心事，我会和好朋友聊天，让他们帮我出出主意。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion14" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion14" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion14" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion14" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion14" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 当情绪低落时，我会向老师请教，听听他们的看法。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion15" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion15" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion15" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion15" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion15" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>消极情绪调节策略 - 转移注意力</h3>
+        <div class="question">
+            <p>1. 感到难过或焦虑时，我会通过玩游戏、看小说等方式转移自己的注意力。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion16" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion16" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion16" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion16" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion16" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 心情不好的时候，我会去户外散步、跑步，让自己放松一下。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion17" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion17" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion17" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion17" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion17" value="5"> 5分：总是</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 当被负面情绪困扰时，我会去做一些家务，把注意力从烦恼的事情上移开。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="emotion18" value="1"> 1分：几乎从不</div>
+                <div class="option"><input type="radio" name="emotion18" value="2"> 2分：很少</div>
+                <div class="option"><input type="radio" name="emotion18" value="3"> 3分：有时</div>
+                <div class="option"><input type="radio" name="emotion18" value="4"> 4分：经常</div>
+                <div class="option"><input type="radio" name="emotion18" value="5"> 5分：总是</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitEmotionRegulation()">提交</button>
+    <div class="success-message" id="emotionSuccess">您已做答完此表，请继续作答</div>
+</div>
+    
+<div id="dysfunctionalAttitude" class="questionnaire-section hidden">
+    <h2>功能失调性态度问卷</h2>
+    <p><strong>说明：</strong>以下每个题目请根据你实际情况，从1 - 5分进行选择。1分表示 "完全不符合"，2分表示 "比较不符合"，3分表示 "不确定"，4分表示 "比较符合"，5分表示 "完全符合"。</p>
+    
+<div class="question">
+        <h3>一、脆弱性维度</h3>
+        <div class="question">
+            <p>1. 我觉得自己很容易受到伤害，哪怕是一些小挫折也难以承受。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc1" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc1" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc1" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc1" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc1" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我常常担心自己无法应对生活中可能出现的困难。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc2" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc2" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc2" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc2" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc2" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我认为自己在面对压力时，会比别人更容易崩溃。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc3" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc3" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc3" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc3" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc3" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 一旦生活中出现问题，我就觉得自己无法解决，只能任其发展。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc4" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc4" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc4" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc4" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc4" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我觉得自己没有足够的能力去应对未来可能发生的挑战。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc5" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc5" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc5" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc5" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc5" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>二、吸引和排斥维度</h3>
+        <div class="question">
+            <p>1. 我会因为担心被别人拒绝或批评，而避免与他人建立亲密关系。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc6" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc6" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc6" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc6" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc6" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 当别人对我表现出友好时，我会怀疑他们的动机，担心他们别有用心。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc7" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc7" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc7" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc7" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc7" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我觉得自己很难信任别人，总是对他人保持一定的距离。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc8" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc8" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc8" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc8" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc8" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我会因为害怕受到伤害，而不愿意投入感情去和别人交往。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc9" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc9" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc9" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc9" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc9" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我认为别人接近我往往是有目的的，很难单纯地对我好。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc10" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc10" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc10" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc10" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc10" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>三、完美化维度</h3>
+        <div class="question">
+            <p>1. 我总是对自己的表现要求极高，稍有不足就会感到非常不满意。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc11" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc11" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc11" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc11" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc11" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我觉得只有做到完美，才能得到别人的认可和尊重。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc12" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc12" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc12" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc12" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc12" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我会花费大量的时间和精力去追求事情的完美，哪怕这会影响效率。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc13" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc13" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc13" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc13" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc13" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我不能容忍自己在任何事情上出现错误，一旦出错就会非常自责。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc14" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc14" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc14" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc14" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc14" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我认为只有完美的结果才是有价值的，过程中的努力并不重要。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc15" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc15" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc15" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc15" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc15" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>四、强制性维度</h3>
+        <div class="question">
+            <p>1. 我觉得自己必须按照一定的规则和标准去做事，否则就会感到不安。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc16" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc16" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc16" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc16" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc16" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我很难接受别人的不同意见，总认为自己的想法和做法是正确的。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc17" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc17" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc17" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc17" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc17" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我会强迫自己去完成一些任务，即使已经感到非常疲惫和厌烦。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc18" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc18" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc18" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc18" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc18" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我认为事情必须按照我预想的方式发展，否则就会感到焦虑。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc19" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc19" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc19" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc19" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc19" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我常常会强迫自己遵守一些不必要的规矩，难以灵活变通。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc20" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc20" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc20" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc20" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc20" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>五、寻求赞许维度</h3>
+        <div class="question">
+            <p>1. 我非常在意别人对我的看法，总是希望得到他人的赞扬和认可。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc21" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc21" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc21" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc21" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc21" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 为了获得别人的赞许，我会改变自己的行为和想法，去迎合他人。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc22" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc22" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc22" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc22" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc22" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 如果没有得到别人的赞扬，我会觉得自己做得不够好，感到失落。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc23" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc23" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc23" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc23" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc23" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我会努力去做一些事情，只是为了让别人对我有好的评价。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc24" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc24" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc24" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc24" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc24" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我认为只有得到别人的赞许，自己才是有价值的。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc25" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc25" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc25" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc25" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc25" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>六、依赖性维度</h3>
+        <div class="question">
+            <p>1. 我觉得自己很难独立做出决定，总是需要别人的建议和指导。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc26" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc26" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc26" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc26" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc26" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我在生活中遇到问题时，第一反应就是寻求别人的帮助，而不是自己尝试解决。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc27" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc27" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc27" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc27" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc27" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我害怕一个人面对困难，总希望有人能在身边支持我。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc28" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc28" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc28" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc28" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc28" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我觉得自己离开了别人的支持和照顾，就无法正常生活。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc29" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc29" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc29" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc29" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc29" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我在做事情时，总是希望有人陪伴，否则就会感到不安。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc30" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc30" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc30" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc30" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc30" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>七、自主性态度维度</h3>
+        <div class="question">
+            <p>1. 我觉得自己的生活应该由别人来安排，自己不需要做太多的努力。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc31" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc31" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc31" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc31" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc31" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我不太愿意为自己的生活设定目标和计划，觉得顺其自然就好。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc32" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc32" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc32" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc32" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc32" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我认为自己没有能力去掌控自己的生活，只能随波逐流。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc33" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc33" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc33" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc33" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc33" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我很少主动去争取自己想要的东西，觉得得到或失去都无所谓。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc34" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc34" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc34" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc34" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc34" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我觉得自己的命运是由外界因素决定的，自己无法改变什么。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc35" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc35" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc35" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc35" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc35" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>八、认知哲学维度</h3>
+        <div class="question">
+            <p>1. 我认为生活中发生的事情都是有原因的，而且这些原因是我无法控制的。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc36" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc36" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc36" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc36" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc36" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我觉得自己对世界的看法很难改变，即使有新的证据出现。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc37" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc37" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc37" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc37" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc37" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我相信宿命论，认为很多事情都是命中注定的，努力也没有用。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc38" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc38" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc38" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc38" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc38" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 我觉得自己的认知和理解是正确的，不太愿意接受新的观念和思想。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc39" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc39" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc39" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc39" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc39" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 我认为事情的发展都是按照一定的规律进行的，个人很难对其产生影响。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="dysfunc40" value="1"> 1分：完全不符合</div>
+                <div class="option"><input type="radio" name="dysfunc40" value="2"> 2分：比较不符合</div>
+                <div class="option"><input type="radio" name="dysfunc40" value="3"> 3分：不确定</div>
+                <div class="option"><input type="radio" name="dysfunc40" value="4"> 4分：比较符合</div>
+                <div class="option"><input type="radio" name="dysfunc40" value="5"> 5分：完全符合</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitDysfunctionalAttitude()">提交</button>
+    <div class="success-message" id="dysfuncSuccess">您已做答完此表，请继续作答</div>
+</div>
+
+<div id="nssi" class="questionnaire-section hidden">
+    <h2>青少年非自杀性自伤行为问卷(ANSAQ)</h2>
+    <p><strong>说明：</strong>本问卷旨在了解你在日常生活中的一些行为情况，请根据自己过去6个月内的真实经历，在以下5个选项中选择最符合你的答案。答案没有对错之分，你的回答仅用于研究和帮助更好地了解相关情况，我们会严格保密，请放心作答。</p>
+    <p><strong>评分标准：</strong>1分：从来没有；2分：很少（1 - 2次）；3分：有时（3 - 5次）；4分：经常（6 - 10次）；5分：总是（超过10次）</p>
+    
+    <div class="question">
+        <h3>一、自伤行为发生情况</h3>
+        <div class="question">
+            <p>1. 你是否有过用刀、针等尖锐物品划伤自己皮肤的行为？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi1" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi1" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi1" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi1" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi1" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 你是否有过用力掐自己，直至皮肤出现淤青或破损的行为？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi2" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi2" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi2" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi2" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi2" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 你是否有过用头撞墙、撞硬物的行为？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi3" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi3" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi3" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi3" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi3" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 你是否有过拔自己头发的行为，导致明显脱发？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi4" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi4" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi4" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi4" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi4" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 你是否有过咬伤自己，比如咬手臂、手指等部位的行为？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi5" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi5" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi5" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi5" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi5" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>二、自伤行为动机</h3>
+        <div class="question">
+            <p>1. 当你感到极度难过、愤怒或焦虑时，是否会通过自伤行为来缓解这些情绪？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi6" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi6" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi6" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi6" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi6" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 当你觉得内心痛苦，却无法用言语表达时，是否会选择自伤？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi7" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi7" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi7" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi7" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi7" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 你是否想通过自伤行为来引起他人（如家人、朋友）对自己的关注？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi8" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi8" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi8" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi8" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi8" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 当你觉得自己犯了错，是否会通过自伤来惩罚自己？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi9" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi9" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi9" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi9" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi9" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 当你感觉与周围的人有隔阂，不被理解时，是否会自伤？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi10" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi10" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi10" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi10" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi10" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>三、自伤行为后的感受</h3>
+        <div class="question">
+            <p>1. 自伤后，你是否会感到短暂的轻松或情绪得到缓解？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi11" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi11" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi11" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi11" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi11" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 自伤后，你是否会陷入后悔、自责的情绪中？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi12" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi12" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi12" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi12" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi12" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 自伤后，你是否会担心自己的行为被他人发现？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi13" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi13" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi13" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi13" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi13" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>4. 自伤后，你是否觉得自己与别人更加不一样，有一种特殊的“身份感”？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi14" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi14" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi14" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi14" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi14" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>5. 自伤后，你是否会更频繁地想到再次自伤？</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="nssi15" value="1"> 1分：从来没有</div>
+                <div class="option"><input type="radio" name="nssi15" value="2"> 2分：很少（1 - 2次）</div>
+                <div class="option"><input type="radio" name="nssi15" value="3"> 3分：有时（3 - 5次）</div>
+                <div class="option"><input type="radio" name="nssi15" value="4"> 4分：经常（6 - 10次）</div>
+                <div class="option"><input type="radio" name="nssi15" value="5"> 5分：总是（超过10次）</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitNSSI()">提交</button>
+    <div class="success-message" id="nssiSuccess">您已做答完此表，请继续作答</div>
+</div>
+    
+<div id="suicideAssessment2" class="questionnaire-section hidden">
+    <h2>自杀风险评估量表</h2>
+    <p><strong>说明：</strong>请根据最近一周您的实际感受，从以下选项中选择最符合您情况的答案。此量表仅作初步评估参考，不能替代专业诊断，若您或身边的人有自杀风险相关担忧，请及时寻求专业帮助。</p>
+    <p><strong>评分标准：</strong>1分：完全没有；2分：偶尔有（一周1 - 2次）；3分：有时有（一周3 - 4次）；4分：经常有（一周5 - 6次）；5分：总是有（每天都有）</p>
+    
+    <div class="question">
+        <h3>一、自杀意念</h3>
+        <div class="question">
+            <p>1. 我曾有过结束自己生命的想法。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_1" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_1" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_1" value="3"> 3分：有时有（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_1" value="4"> 4分：经常有（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_1" value="5"> 5分：总是有（每天都有）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我会想象自己死亡后的情景。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_2" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_2" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_2" value="3"> 3分：有时有（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_2" value="4"> 4分：经常有（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_2" value="5"> 5分：总是有（每天都有）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我觉得死亡或许是一种解脱。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_3" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_3" value="2"> 2分：偶尔有（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_3" value="3"> 3分：有时有（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_3" value="4"> 4分：经常有（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_3" value="5"> 5分：总是有（每天都有）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>二、自杀计划</h3>
+        <div class="question">
+            <p>1. 我曾制定过自杀的具体计划。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_4" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_4" value="2"> 2分：偶尔想过制定计划（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_4" value="3"> 3分：有时考虑制定计划（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_4" value="4"> 4分：已经有大致计划（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_4" value="5"> 5分：有详细且可实施的计划（每天都在考虑实施）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我想好了自杀的时间和地点。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_5" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_5" value="2"> 2分：偶尔想过相关时间地点（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_5" value="3"> 3分：有时琢磨时间地点（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_5" value="4"> 4分：基本确定了时间和地点（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_5" value="5"> 5分：明确具体时间和地点并准备行动（每天都在准备）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我准备好了用于自杀的工具或物品。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_6" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_6" value="2"> 2分：偶尔想过准备（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_6" value="3"> 3分：有时打算准备（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_6" value="4"> 4分：已经有了部分工具（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_6" value="5"> 5分：已备齐所有工具准备行动（每天都在准备）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>三、情绪状态</h3>
+        <div class="question">
+            <p>1. 我感到极度绝望，看不到未来的希望。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_7" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_7" value="2"> 2分：偶尔感到绝望（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_7" value="3"> 3分：有时觉得绝望（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_7" value="4"> 4分：经常处于绝望状态（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_7" value="5"> 5分：总是感到极度绝望（每天都绝望）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我被强烈的孤独感包围，觉得无人理解自己。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_8" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_8" value="2"> 2分：偶尔感到孤独（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_8" value="3"> 3分：有时觉得孤独（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_8" value="4"> 4分：经常觉得孤独（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_8" value="5"> 5分：总是被孤独笼罩（每天都孤独）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我长期陷入悲伤、痛苦的情绪中无法自拔。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_9" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_9" value="2"> 2分：偶尔悲伤痛苦（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_9" value="3"> 3分：有时悲伤痛苦（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_9" value="4"> 4分：经常处于悲伤痛苦中（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_9" value="5"> 5分：总是被悲伤痛苦折磨（每天都痛苦）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>四、行为改变</h3>
+        <div class="question">
+            <p>1. 我最近开始回避社交，减少与家人、朋友的接触。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_10" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_10" value="2"> 2分：偶尔回避（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_10" value="3"> 3分：有时回避（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_10" value="4"> 4分：经常回避（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_10" value="5"> 5分：总是回避（每天都拒绝社交）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我对曾经喜欢的事物失去了兴趣，不再参与相关活动。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_11" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_11" value="2"> 2分：偶尔失去兴趣（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_11" value="3"> 3分：有时没兴趣（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_11" value="4"> 4分：经常没兴趣（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_11" value="5"> 5分：总是没兴趣（对所有喜好都无感）</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我的睡眠和饮食规律被打乱，出现失眠、食欲不振或暴饮暴食的情况。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_12" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_12" value="2"> 2分：偶尔睡眠饮食紊乱（一周1 - 2次）</div>
+                <div class="option"><input type="radio" name="suicide2_12" value="3"> 3分：有时睡眠饮食失调（一周3 - 4次）</div>
+                <div class="option"><input type="radio" name="suicide2_12" value="4"> 4分：经常睡眠饮食不正常（一周5 - 6次）</div>
+                <div class="option"><input type="radio" name="suicide2_12" value="5"> 5分：总是睡眠饮食混乱（每天都不正常）</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="question">
+        <h3>五、既往经历</h3>
+        <div class="question">
+            <p>1. 我过去曾有过自杀未遂的经历。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_13" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_13" value="2"> 2分：很久以前有过，影响不大</div>
+                <div class="option"><input type="radio" name="suicide2_13" value="3"> 3分：过去有过，偶尔会想起</div>
+                <div class="option"><input type="radio" name="suicide2_13" value="4"> 4分：过去经历对现在仍有影响</div>
+                <div class="option"><input type="radio" name="suicide2_13" value="5"> 5分：过去经历严重影响现在，时常想起</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>2. 我的家族中有自杀或精神疾病的病史。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_14" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_14" value="2"> 2分：听说过但关系较远</div>
+                <div class="option"><input type="radio" name="suicide2_14" value="3"> 3分：有亲戚有相关情况</div>
+                <div class="option"><input type="radio" name="suicide2_14" value="4"> 4分：直系亲属有相关情况</div>
+                <div class="option"><input type="radio" name="suicide2_14" value="5"> 5分：直系亲属自杀或患精神疾病对我影响很大</div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <p>3. 我近期遭受了重大的生活挫折，如失恋、失业、亲友离世等。</p>
+            <div class="options">
+                <div class="option"><input type="radio" name="suicide2_15" value="1"> 1分：完全没有</div>
+                <div class="option"><input type="radio" name="suicide2_15" value="2"> 2分：遇到小挫折，能很快恢复</div>
+                <div class="option"><input type="radio" name="suicide2_15" value="3"> 3分：有一定挫折，需要时间调整</div>
+                <div class="option"><input type="radio" name="suicide2_15" value="4"> 4分：遭受较大挫折，对生活影响明显</div>
+                <div class="option"><input type="radio" name="suicide2_15" value="5"> 5分：遭遇重大挫折，生活完全被打乱</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="submit-btn" onclick="submitSuicideAssessment2()">提交</button>
+    <div class="success-message" id="suicide2Success">您已做答完此表，请继续作答</div>
+</div>
+    
+    <!-- 结果展示区域 -->
+    <div class="results-section" id="resultsSection">
+        <h2>问卷评估结果</h2>
+        
+        <!-- 用户信息 -->
+        <div class="result-user-info">
+            <h3>个人信息</h3>
+            <p>姓名：<span id="resultUserName"></span></p>
+            <p>生日：<span id="resultUserBirthday"></span></p>
+            <p>性别：<span id="resultUserGender"></span></p>
+            <p>手机号：<span id="resultUserPhone"></span></p>
+            <p>评估日期：<span id="resultDate"></span></p>
+            <p class="report-disclaimer">本报告只作为临床参考，不能替代专业诊断。</p>
+        </div>
+        
+        <div class="result-item" id="suicideResult">
+            <div class="result-title">自杀风险评估量表</div>
+            <p>得分：<span class="result-score" id="suicideScore">0</span></p>
+            <p id="suicideInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="hamaResult">
+            <div class="result-title">汉密尔顿焦虑量表</div>
+            <p>得分：<span class="result-score" id="hamaScore">0</span></p>
+            <p id="hamaInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="hamdResult">
+            <div class="result-title">汉密尔顿抑郁量表</div>
+            <p>得分：<span class="result-score" id="hamdScore">0</span></p>
+            <p id="hamdInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="emotionResult">
+            <div class="result-title">青少年情绪调节问卷</div>
+            <p>得分：<span class="result-score" id="emotionScore">0</span></p>
+            <p id="emotionInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="dysfuncResult">
+            <div class="result-title">功能失调性态度问卷</div>
+            <p>得分：<span class="result-score" id="dysfuncScore">0</span></p>
+            <p id="dysfuncInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="nssiResult">
+            <div class="result-title">青少年非自杀性自伤行为问卷</div>
+            <p>得分：<span class="result-score" id="nssiScore">0</span></p>
+            <p id="nssiInterpretation">请完成问卷后查看结果</p>
+        </div>
+        
+        <div class="result-item" id="suicideResult2">
+            <div class="result-title">自杀风险评估量表（第二次）</div>
+            <p>得分：<span class="result-score" id="suicideScore2">0</span></p>
+            <p id="suicideInterpretation2">请完成问卷后查看结果</p>
+        </div>
+    </div>
+    
+    <button class="view-results-btn hidden" id="viewResultsBtn" onclick="showResults()">查看全部结果</button>
+    
+    <script>
+        // 用户信息
+        const userInfo = {
+            name: '',
+            birthday: '',
+            gender: '',
+            phone: ''
+        };
+        
+        // 完成用户信息
+        function completeUserInfo() {
+            const name = document.getElementById('userName').value;
+            const birthday = document.getElementById('userBirthday').value;
+            const gender = document.getElementById('userGender').value;
+            const phone = document.getElementById('userPhone').value;
+            
+            if (!name || !birthday || !gender || !phone) {
+                alert('请填写所有必填信息');
+                return;
+            }
+            
+            userInfo.name = name;
+            userInfo.birthday = birthday;
+            userInfo.gender = gender;
+            userInfo.phone = phone;
+            
+            document.getElementById('userInfoSection').classList.add('hidden');
+            document.getElementById('userAgreementSection').classList.remove('hidden');
+        }
+        
+        // 同意继续
+        function agreeToProceed() {
+            document.getElementById('userAgreementSection').classList.add('hidden');
+            document.getElementById('progressSection').classList.remove('hidden');
+            showNextQuestionnaire();
+        }
+        
+        // 不同意继续
+        function disagreeToProceed() {
+            document.getElementById('userAgreementSection').classList.add('hidden');
+            document.getElementById('userInfoSection').classList.remove('hidden');
+        }
+        
+        // 存储问卷完成状态
+        const completedQuestionnaires = {
+            suicideAssessment: false,
+            hama: false,
+            hamd: false,
+            emotionRegulation: false,
+            dysfunctionalAttitude: false,
+            nssi: false,
+            suicideAssessment2: false
+        };
+        
+        // 存储问卷得分
+        const scores = {
+            suicideAssessment: 0,
+            hama: 0,
+            hamd: 0,
+            emotionRegulation: 0,
+            dysfunctionalAttitude: 0,
+            nssi: 0,
+            suicideAssessment2: 0
+        };
+        
+        // 提交自杀风险评估量表
+        function submitSuicideAssessment() {
+            const questions = [
+                'suicide1', 'suicide2', 'suicide3', 'suicide4', 'suicide5', 
+                'suicide6', 'suicide7', 'suicide8', 'suicide9', 'suicide10', 
+                'suicide11', 'suicide12', 'suicide13', 'suicide14', 'suicide15'
+            ];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.suicideAssessment = score;
+                completedQuestionnaires.suicideAssessment = true;
+                document.getElementById('suicideSuccess').classList.add('active');
+                document.getElementById('suicideAssessment').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交汉密尔顿焦虑量表
+        function submitHAMA() {
+            const questions = ['hama1', 'hama2', 'hama3', 'hama4', 'hama5', 
+                              'hama6', 'hama7', 'hama8', 'hama9', 'hama10', 
+                              'hama11', 'hama12', 'hama13', 'hama14', 'hama15', 
+                              'hama16', 'hama17', 'hama18', 'hama19', 'hama20', 
+                              'hama21'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.hama = score;
+                completedQuestionnaires.hama = true;
+                document.getElementById('hamaSuccess').classList.add('active');
+                document.getElementById('hama').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交汉密尔顿抑郁量表
+        function submitHAMD() {
+            const questions = ['hamd1', 'hamd2', 'hamd3', 'hamd4', 'hamd5', 
+                              'hamd6', 'hamd7', 'hamd8', 'hamd9', 'hamd10', 
+                              'hamd11', 'hamd12', 'hamd13', 'hamd14', 'hamd15', 
+                              'hamd16', 'hamd17', 'hamd18', 'hamd19', 'hamd20', 
+                              'hamd21', 'hamd22', 'hamd23', 'hamd24'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.hamd = score;
+                completedQuestionnaires.hamd = true;
+                document.getElementById('hamdSuccess').classList.add('active');
+                document.getElementById('hamd').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交青少年情绪调节问卷
+        function submitEmotionRegulation() {
+            const questions = ['emotion1', 'emotion2', 'emotion3', 'emotion4', 'emotion5', 
+                              'emotion6'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.emotionRegulation = score;
+                completedQuestionnaires.emotionRegulation = true;
+                document.getElementById('emotionSuccess').classList.add('active');
+                document.getElementById('emotionRegulation').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交功能失调性态度问卷
+        function submitDysfunctionalAttitude() {
+            const questions = ['dysfunc1', 'dysfunc2', 'dysfunc3', 'dysfunc4', 'dysfunc5'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.dysfunctionalAttitude = score;
+                completedQuestionnaires.dysfunctionalAttitude = true;
+                document.getElementById('dysfuncSuccess').classList.add('active');
+                document.getElementById('dysfunctionalAttitude').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交青少年非自杀性自伤行为问卷
+        function submitNSSI() {
+            const questions = ['nssi1', 'nssi2', 'nssi3', 'nssi4', 'nssi5'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.nssi = score;
+                completedQuestionnaires.nssi = true;
+                document.getElementById('nssiSuccess').classList.add('active');
+                document.getElementById('nssi').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 提交自杀风险评估量表（第二次）
+        function submitSuicideAssessment2() {
+            const questions = ['suicide2_1', 'suicide2_2', 'suicide2_3'];
+            
+            let score = 0;
+            let completed = true;
+            
+            for (const question of questions) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    score += parseInt(selectedOption.value);
+                } else {
+                    completed = false;
+                    alert('请完成所有问题');
+                    break;
+                }
+            }
+            
+            if (completed) {
+                scores.suicideAssessment2 = score;
+                completedQuestionnaires.suicideAssessment2 = true;
+                document.getElementById('suicide2Success').classList.add('active');
+                document.getElementById('suicideAssessment2').classList.add('hidden');
+                updateProgress();
+                showNextQuestionnaire();
+            }
+        }
+        
+        // 更新进度条
+        function updateProgress() {
+            const completedCount = Object.values(completedQuestionnaires).filter(status => status).length;
+            const percentage = (completedCount / 7) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${completedCount}/7 问卷已完成`;
+            
+            // 如果所有问卷都已完成，显示结果按钮
+            if (completedCount === 7) {
+                document.getElementById('viewResultsBtn').classList.remove('hidden');
+            }
+        }
+        
+        // 显示下一个问卷
+        function showNextQuestionnaire() {
+            const questionnaires = [
+                'suicideAssessment', 'hama', 'hamd', 'emotionRegulation', 
+                'dysfunctionalAttitude', 'nssi', 'suicideAssessment2'
+            ];
+            
+            for (const questionnaire of questionnaires) {
+                if (!completedQuestionnaires[questionnaire]) {
+                    document.getElementById(questionnaire).classList.remove('hidden');
+                    return;
+                }
+            }
+        }
+        
+        // 显示结果
+        function showResults() {
+            // 计算并显示每个问卷的得分和解释
+            
+            // 自杀风险评估量表
+            document.getElementById('suicideScore').textContent = scores.suicideAssessment;
+            const suicideInterpretation = document.getElementById('suicideInterpretation');
+            if (scores.suicideAssessment <= 15) {
+                suicideInterpretation.textContent = '低风险：表明目前自杀风险较低或无自杀风险，但仍需关注自身情绪和心理状况，保持积极的生活态度。';
+            } else if (scores.suicideAssessment <= 30) {
+                suicideInterpretation.textContent = '中风险：存在一定自杀风险，需引起重视，建议及时与家人、朋友沟通，或寻求专业心理咨询师的帮助。';
+            } else {
+                suicideInterpretation.textContent = '高风险：自杀风险较高，情况紧急，务必立即寻求专业心理医生、精神科医生或拨打当地自杀干预热线等专业援助，身边需有人陪伴，确保生命安全。';
+            }
+            
+            // 汉密尔顿焦虑量表
+            document.getElementById('hamaScore').textContent = scores.hama;
+            const hamaInterpretation = document.getElementById('hamaInterpretation');
+            if (scores.hama <= 14) {
+                hamaInterpretation.textContent = '无焦虑或轻微焦虑：表明目前焦虑水平较低，生活和工作未受明显影响。';
+            } else if (scores.hama <= 21) {
+                hamaInterpretation.textContent = '轻度焦虑：有一定焦虑症状，可能对日常生活和工作产生一定影响，建议适当放松和调整。';
+            } else if (scores.hama <= 28) {
+                hamaInterpretation.textContent = '中度焦虑：焦虑症状较为明显，可能严重影响生活和工作，建议寻求专业心理咨询师的帮助。';
+            } else {
+                hamaInterpretation.textContent = '重度焦虑：焦虑症状严重，可能完全无法正常生活和工作，需立即寻求专业心理医生或精神科医生的帮助。';
+            }
+            
+            // 汉密尔顿抑郁量表
+            document.getElementById('hamdScore').textContent = scores.hamd;
+            const hamdInterpretation = document.getElementById('hamdInterpretation');
+            if (scores.hamd <= 7) {
+                hamdInterpretation.textContent = '无抑郁：表明目前没有明显的抑郁症状，情绪状态良好。';
+            } else if (scores.hamd <= 17) {
+                hamdInterpretation.textContent = '轻度抑郁：有一定抑郁症状，可能对日常生活和工作产生一定影响，建议适当调整和放松。';
+            } else if (scores.hamd <= 24) {
+                hamdInterpretation.textContent = '中度抑郁：抑郁症状较为明显，可能严重影响生活和工作，建议寻求专业心理咨询师的帮助。';
+            } else {
+                hamdInterpretation.textContent = '重度抑郁：抑郁症状严重，可能完全无法正常生活和工作，需立即寻求专业心理医生或精神科医生的帮助。';
+            }
+            
+            // 青少年情绪调节问卷
+            document.getElementById('emotionScore').textContent = scores.emotionRegulation;
+            const emotionInterpretation = document.getElementById('emotionInterpretation');
+            if (scores.emotionRegulation <= 18) {
+                emotionInterpretation.textContent = '情绪调节能力较强：表明您在处理情绪方面表现良好，能够有效应对各种情绪挑战。';
+            } else if (scores.emotionRegulation <= 24) {
+                emotionInterpretation.textContent = '情绪调节能力一般：有一定的情绪调节能力，但在某些方面可能需要进一步提升，建议学习更多情绪管理技巧。';
+            } else {
+                emotionInterpretation.textContent = '情绪调节能力较弱：情绪调节能力有待提高，可能在面对压力和负面情绪时感到困难，建议寻求专业帮助以改善情绪管理能力。';
+            }
+            
+            // 功能失调性态度问卷
+            document.getElementById('dysfuncScore').textContent = scores.dysfunctionalAttitude;
+            const dysfuncInterpretation = document.getElementById('dysfuncInterpretation');
+            if (scores.dysfunctionalAttitude <= 15) {
+                dysfuncInterpretation.textContent = '功能失调性态度较少：表明您在认知和态度方面较为健康，能够以积极的方式看待自己和周围环境。';
+            } else if (scores.dysfunctionalAttitude <= 25) {
+                dysfuncInterpretation.textContent = '有一定功能失调性态度：可能存在一些不合理的认知和态度，可能对情绪和行为产生一定影响，建议适当调整思维方式。';
+            } else {
+                dysfuncInterpretation.textContent = '功能失调性态度较多：存在较多不合理的认知和态度，可能对情绪和行为产生较大负面影响，建议寻求专业心理咨询师的帮助以改善认知模式。';
+            }
+            
+            // 青少年非自杀性自伤行为问卷
+            document.getElementById('nssiScore').textContent = scores.nssi;
+            const nssiInterpretation = document.getElementById('nssiInterpretation');
+            if (scores.nssi <= 15) {
+                nssiInterpretation.textContent = '自伤行为较少：表明目前自伤行为发生频率较低或无自伤风险，但仍需关注自身情绪和心理状态，保持积极的生活态度。';
+            } else if (scores.nssi <= 30) {
+                nssiInterpretation.textContent = '有一定自伤行为：存在一定频率的自伤行为，需引起重视，建议及时与家人、朋友沟通，或寻求专业心理咨询师的帮助。';
+            } else {
+                nssiInterpretation.textContent = '自伤行为较多：自伤行为发生频率较高，情况紧急，务必立即寻求专业心理医生、精神科医生或拨打当地自杀干预热线等专业援助，身边需有人陪伴，确保生命安全。';
+            }
+            
+            // 自杀风险评估量表（第二次）
+            document.getElementById('suicideScore2').textContent = scores.suicideAssessment2;
+            const suicideInterpretation2 = document.getElementById('suicideInterpretation2');
+            if (scores.suicideAssessment2 <= 15) {
+                suicideInterpretation2.textContent = '低风险：表明目前自杀风险较低或无自杀风险，但仍需关注自身情绪和心理状态，保持积极的生活态度。';
+            } else if (scores.suicideAssessment2 <= 30) {
+                suicideInterpretation2.textContent = '中风险：存在一定自杀风险，需引起重视，建议及时与家人、朋友沟通，或寻求专业心理咨询师的帮助。';
+            } else {
+                suicideInterpretation2.textContent = '高风险：自杀风险较高，情况紧急，务必立即寻求专业心理医生、精神科医生或拨打当地自杀干预热线等专业援助，身边需有人陪伴，确保生命安全。';
+            }
+            
+            // 显示用户信息
+            document.getElementById('resultUserName').textContent = userInfo.name;
+            document.getElementById('resultUserBirthday').textContent = userInfo.birthday;
+            document.getElementById('resultUserGender').textContent = userInfo.gender;
+            document.getElementById('resultUserPhone').textContent = userInfo.phone;
+            document.getElementById('resultDate').textContent = new Date().toLocaleDateString();
+            
+            // 显示结果区域
+            document.getElementById('resultsSection').classList.add('active');
+        }
+    </script>
+</body>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
